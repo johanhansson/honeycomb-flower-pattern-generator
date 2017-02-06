@@ -1,18 +1,35 @@
 var pattern;
 var canvas;
+var button;
+var bgc;
 
 function preload() {
 
 }
 
 function setup() {
-  canvas = createCanvas(700, 400);
-  pattern = new Pattern(10, 30,30,"img", 7);
-  pattern.rows = generateRows();
+    canvas = createCanvas(725, 425);
+    pattern = new Pattern(10, 30,30,"img", 7);
+    pattern.rows = generateRows();
+    bgc = 'rgba(0,0 ,0, 0)';
+    var button1 = createButton('Spara bild med bakgrund');
+    var button2 = createButton('Spara bild utan bakgrund');
+    button1.mousePressed(function(){
+        bgc = 'white';
+        draw();
+        saveCanvas(canvas,"blom-mönster",".png");
+    });
+    button2.mousePressed(function () {
+        bgc = 'rgba(0,0 ,0, 0)'; // Transparent
+        draw();
+        saveCanvas(canvas,"blom-mönster",".png")
+    });
+
 }
 
 function draw() {
     clear();
+    background(bgc);
     pattern.printRows();
 }
 
@@ -38,7 +55,8 @@ function Pattern(padding, imgWidth, imgHeight, path, num_tiles){
     this.rows = [];
     this.images = [];
 
-    for(i = 0; i < this.num_tiles; i++){
+    for(var i = 0; i < this.num_tiles; i++){
+
         this.images[i] = loadImage(path+"/"+ (i+1) +".png");
     }
 
@@ -96,11 +114,17 @@ function generateRow (startTile, offset) {
 function mousePressed() {
     // Find closeset tile
     var y = floor(mouseY/pattern.tileHeight);
-    var x = floor((mouseX-pattern.rows[y].offset)/pattern.tileWidth);
-    // Check if click was inside circle
-    var d = dist(mouseX, mouseY, pattern.rows[y].tiles[x].x+pattern.imgWidth/2, pattern.rows[y].y+pattern.imgWidth/2);
-    if (d < (pattern.imgWidth/2) ) {
-        pattern.rows[y].tiles[x].visable = !pattern.rows[y].tiles[x].visable;
+    if(y >= 0 && y < pattern.rows.length){
+        var x = floor((mouseX-pattern.rows[y].offset)/pattern.tileWidth);
+        if(x >= 0 && x < pattern.rows[y].tiles.length){
+            // Check if click was inside circle
+            var d = dist(mouseX, mouseY, pattern.rows[y].tiles[x].x+pattern.imgWidth/2, pattern.rows[y].y+pattern.imgWidth/2);
+            if (d < (pattern.imgWidth/2) ) {
+                pattern.rows[y].tiles[x].visable = !pattern.rows[y].tiles[x].visable;
+            }
+        }
     }
 
+
 }
+
